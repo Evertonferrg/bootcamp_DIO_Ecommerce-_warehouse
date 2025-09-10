@@ -37,6 +37,7 @@ public class ProductEntity {
         return stock;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof ProductEntity that)) return false;

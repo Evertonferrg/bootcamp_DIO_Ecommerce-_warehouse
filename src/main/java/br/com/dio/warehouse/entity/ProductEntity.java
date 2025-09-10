@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static br.com.dio.warehouse.entity.StockStatus.AVAILABLE;
@@ -27,16 +28,22 @@ public class ProductEntity {
     @ToString.Exclude
     @OneToMany(mappedBy = "product", cascade =  ALL, orphanRemoval = true)
     private Set<StockEntity> stocks = new HashSet<>();
-
-    public StockEntity decStock(){
-        var stock = this.stocks.stream()
+    private StockEntity getStockWithSoldPrice(){
+        return this.stocks.stream()
                 .filter(s -> s.getStatus().equals(AVAILABLE))
                 .min(Comparator.comparing(StockEntity::getSoldPrice))
                 .orElseThrow();
+    }
+
+    public StockEntity decStock(){
+        var stock = getStockWithSoldPrice();
         stock.decAmount();
         return stock;
     }
 
+    public BigDecimal getPrice(){
+        return getStockWithSoldPrice().getSoldPrice();
+    }
 
     @Override
     public boolean equals(Object o) {
